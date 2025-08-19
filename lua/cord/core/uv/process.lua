@@ -48,6 +48,7 @@ function M.spawn(options)
   end)
 end
 
+local logger = require 'cord.plugin.log'
 function M.spawn_daemon(options)
   local stdout = uv.new_pipe()
   local stderr = uv.new_pipe()
@@ -62,7 +63,9 @@ function M.spawn_daemon(options)
     hide = true,
     detached = true,
   }, function(code, signal)
+    logger.debug 'spawned process'
     handle:close()
+    logger.debug 'closed handle'
 
     if options.on_exit then options.on_exit(code, signal) end
   end)
@@ -71,11 +74,14 @@ function M.spawn_daemon(options)
     if stdout then stdout:close() end
     if stderr then stderr:close() end
     if options.on_error then options.on_error('Failed to spawn process: ' .. pid) end
+
+    logger.debug 'no handle'
     return
   end
 
   stdout:read_start(function(err, chunk)
     if err then
+      logger.debug 'read error'
       stdout:read_stop()
       stdout:close()
       if options.on_error then options.on_error(err) end
@@ -94,6 +100,7 @@ function M.spawn_daemon(options)
         buffer.stdout = buffer.stdout:sub(line_end + 1)
       end
     else
+      logger.debug 'no chunk'
       stdout:read_stop()
       stdout:close()
     end
@@ -101,6 +108,7 @@ function M.spawn_daemon(options)
 
   stderr:read_start(function(err, chunk)
     if err then
+      logger.debug 'stderr read error'
       stderr:read_stop()
       stderr:close()
       if options.on_error then options.on_error(err) end
@@ -117,12 +125,15 @@ function M.spawn_daemon(options)
         if options.on_stderr then options.on_stderr(line) end
       end
     else
+      logger.debug 'stderr no chunk'
       stderr:read_stop()
       stderr:close()
     end
   end)
 
   if options.detached then handle:unref() end
+
+  logger.debug 'returning handle'
 
   return handle
 end
