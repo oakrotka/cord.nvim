@@ -63,7 +63,7 @@ impl PipeServerImpl for PipeServer {
             let mut notified = false;
             while running.load(Ordering::SeqCst) {
                 if !notified {
-                    echo!("Ready");
+                    echoln!("Ready");
                     notified = true;
                 }
 
