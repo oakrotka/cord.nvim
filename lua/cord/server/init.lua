@@ -117,6 +117,7 @@ function M:initialize()
   self.status = 'connecting'
   async.run(function()
     logger.debug 'Initializing server...'
+    logger.debug 'init'
 
     local path = config.advanced.server.pipe_path
       or require('cord.plugin.constants').get_pipe_path()
