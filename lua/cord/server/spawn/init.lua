@@ -30,7 +30,7 @@ M.spawn = async.wrap(function(config, pipe_path)
     logger.debug 'Spawn: executable found'
 
     local process = require 'cord.core.uv.process'
-    process.spawn_daemon {
+    local ok, data = pcall(process.spawn_daemon, {
       cmd = exec_path,
       args = {
         '-p',
@@ -67,7 +67,10 @@ M.spawn = async.wrap(function(config, pipe_path)
         logger.debug('Spawn: on_error: ' .. tostring(err))
         reject(err)
       end,
-    }
+    })
+
+    logger.debug('spawn ok: ' .. tostring(ok))
+    logger.debug('spawn data: ' .. tostring(data))
   end)
 end)
 
