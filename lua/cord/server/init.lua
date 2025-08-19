@@ -41,8 +41,13 @@ function M:connect(path, retried)
     logger.debug 'Pipe not found. Spawning server executable...'
 
     local process = require('cord.server.spawn').spawn(config.get(), path)
+    logger.debug 'Spawned Future'
     local should_continue, retry = process:await()
-    if not should_continue then return end
+    logger.debug 'Awaited Future'
+    if not should_continue then
+      logger.debug 'Future returned false'
+      return
+    end
 
     logger.debug 'Server executable spawned'
     if retry then return M:connect(path):await() end
