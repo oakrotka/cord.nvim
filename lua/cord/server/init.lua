@@ -42,7 +42,7 @@ function M:connect(path, retried)
 
     local process = require('cord.server.spawn').spawn(config.get(), path)
     logger.debug 'Spawned Future'
-    local should_continue, retry = process:await()
+    local should_continue, retry, err = process:get()
     logger.debug 'Awaited Future'
     if not should_continue then
       logger.debug 'Future returned false'
