@@ -3,6 +3,7 @@ local Future = require 'cord.core.async.future'
 local M = {}
 
 M.spawn = async.wrap(function(config, pipe_path)
+  require('cord.plugin.log').debug 'Spawning server'
   return Future.new(function(resolve, reject)
     local logger = require 'cord.plugin.log'
     local update_strategy = config.advanced.server.update
