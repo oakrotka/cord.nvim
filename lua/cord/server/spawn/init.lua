@@ -8,6 +8,7 @@ M.spawn = async.wrap(function(config, pipe_path)
     local update_strategy = config.advanced.server.update
     local client_id = config.editor.client
     local exec_path = require('cord.server.fs').get_executable_path(config)
+    logger.debug('Spawn: executable path: ' .. tostring(exec_path))
 
     local fs = require 'cord.core.uv.fs'
     local stat = fs.stat(exec_path):get()
@@ -25,6 +26,8 @@ M.spawn = async.wrap(function(config, pipe_path)
       return resolve(false, false)
     end
 
+    logger.debug 'Spawn: executable found'
+
     local process = require 'cord.core.uv.process'
     process.spawn_daemon {
       cmd = exec_path,
@@ -41,6 +44,7 @@ M.spawn = async.wrap(function(config, pipe_path)
         config.advanced.discord.reconnect.initial and '-i' or nil,
       },
       on_stdout = function(data)
+        logger.debug('Spawn: stdout: ' .. tostring(data))
         if data:match 'Ready' then
           logger.debug 'Spawn: server signaled Ready'
           resolve(true, false)
@@ -53,10 +57,12 @@ M.spawn = async.wrap(function(config, pipe_path)
           return
         end
 
+        logger.debug 'a'
         logger.debug('Spawn: stderr: ' .. tostring(err))
         reject(err)
       end,
       on_error = function(err)
+        logger.debug 'b'
         logger.debug('Spawn: on_error: ' .. tostring(err))
         reject(err)
       end,
